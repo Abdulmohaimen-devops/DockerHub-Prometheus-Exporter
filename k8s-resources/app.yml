@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-app
+  template:
+    metadata:
+      labels:
+        app: test-app
+    spec:
+      containers:
+        - name: test-app
+          image: local.registry/test-app:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 2113
+          env:
+            - name: DOCKERHUB_ORGANIZATION
+              value: "test"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-app
+  labels:
+    app: test-app
+spec:
+  selector:
+    app: test-app
+  ports:
+    - protocol: TCP
+      port: 2113
+      targetPort: 2113
+  type: ClusterIP
